@@ -1,19 +1,36 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import axios from 'axios'
+const {context} = require('@actions/github')
 
-async function run(): Promise<void> {
+const {pull_request} = context.payload
+
+const updateTestIsCompleted = async () => {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    axios
+      .post(
+        `${core.getInput('target_url')}/api/tests/update-test-to-completed`,
+        {
+          name: pull_request.title,
+          apiKey: core.getInput('metis_api_key')
+        }
+      )
+      .then(function (response) {
+        console.log(response)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  } catch (error) {
+    console.log(error)
+  }
+}
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+const run = async (): Promise<void> => {
+  try {
+    await updateTestIsCompleted()
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
-run()
+run();

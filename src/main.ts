@@ -6,9 +6,10 @@ const {pull_request} = context.payload
 
 const updateTestIsCompleted = async () => {
   try {
+    const urlPrefix: string = core.getInput('target_url') || `https://ingest-stg.metisdata.io`;
     axios
       .post(
-        `${core.getInput('target_url')}/api/tests/update-test-to-completed`,
+        `${urlPrefix}/api/tests/update-test-to-completed`,
         {
           name: pull_request.title,
           apiKey: core.getInput('metis_api_key')

@@ -44,8 +44,9 @@ const { context } = __nccwpck_require__(716);
 const { pull_request } = context.payload;
 const updateTestIsCompleted = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const urlPrefix = core.getInput('target_url') || `https://ingest-stg.metisdata.io`;
         axios_1.default
-            .post(`${core.getInput('target_url')}/api/tests/update-test-to-completed`, {
+            .post(`${urlPrefix}/api/tests/update-test-to-completed`, {
             name: pull_request.title,
             apiKey: core.getInput('metis_api_key')
         })
